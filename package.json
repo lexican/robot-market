@@ -8,6 +8,12 @@
     "start": "cd server && node index.js & cd frontend && npm run start",
     "dev": "concurrently \"cd server && node index.js\" \"cd frontend && npm run start\""
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm lint",
+      "pre-push": "npm test"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+ssh://git@bitbucket.org/morphosisteam/robot-market.git"
