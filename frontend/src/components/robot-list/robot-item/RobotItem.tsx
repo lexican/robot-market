@@ -1,10 +1,10 @@
 import { FC } from "react";
 import { formatDate, formatPrice } from "../../../common/helper";
-import { Robot } from "../RobotList";
+import { IRobot } from "../RobotList";
 import "./robot-item.scss";
 
 interface Props {
-  robot: Robot;
+  robot: IRobot;
 }
 
 const RobotItem: FC<Props> = ({ robot }) => {

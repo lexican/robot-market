@@ -1,7 +1,8 @@
 import { FC } from "react";
+import { useAppStateContext } from "../../context/state";
 import RobotItem from "./robot-item/RobotItem";
 import './robot-list.scss'
-export type Robot = {
+export type IRobot = {
   name: number;
   image: string;
   price: number;
@@ -9,14 +10,13 @@ export type Robot = {
   createdAt: string;
   material: string;
 };
-interface Props {
-  robotList: Robot[];
-}
-const RobotList: FC<Props> = ({ robotList }) => {
+
+const RobotList: FC<unknown> = () => {
+  const { filteredRobots  } = useAppStateContext();
   return (
     <section className="robots-list">
       <div className="row">
-        {robotList.map((item, index) => {
+        {filteredRobots.map((item, index) => {
           return <RobotItem robot={item} key={index} />;
         })}
       </div>

@@ -16,3 +16,4 @@ export const formatPrice = (price) => {
   }).format(price);
   return formattedPrice;
 };
+
