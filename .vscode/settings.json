@@ -4,5 +4,8 @@
     "eslint.alwaysShowStatus": true,
     "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
+    },
+    "[xml]": {
+        "editor.defaultFormatter": "redhat.vscode-xml"
     }
 }
