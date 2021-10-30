@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { formatDate, formatPrice } from "../../../common/helper";
+import { useAppStateContext } from "../../../context/state";
 import { IRobot } from "../RobotList";
 import "./robot-item.scss";
 
@@ -12,6 +13,7 @@ const RobotItem: FC<Props> = ({ robot }) => {
   const isOutOftock = () => {
     return stock > 0 ? false : true;
   };
+  const { addToCart } = useAppStateContext();
 
   return (
     <div className="col-md-3 robot-item">
@@ -23,7 +25,13 @@ const RobotItem: FC<Props> = ({ robot }) => {
         <div className="createdAt">{formatDate(createdAt)}</div>
         <div className="material">{material}</div>
         <div className="d-flex justify-content-center mt-4">
-          <button className="btn btn-primary" disabled={isOutOftock()}>
+          <button
+            className="btn btn-primary"
+            disabled={isOutOftock()}
+            onClick={() => {
+              addToCart(robot);
+            }}
+          >
             Add to cart
           </button>
         </div>

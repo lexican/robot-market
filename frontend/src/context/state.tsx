@@ -65,9 +65,9 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
       });
   };
 
-  const addToCart = useCallback((product: IRobot) => {
+  const addToCart = useCallback((robot: IRobot) => {
     setCart((prev) => {
-      const newCart = [product, ...prev];
+      const newCart = [robot, ...prev];
       isBrowser &&
         localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
       return newCart;
