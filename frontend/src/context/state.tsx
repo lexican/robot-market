@@ -18,6 +18,7 @@ export interface IStateContext {
   filteredRobots: IRobot[];
   cart: IRobot[];
   addToCart: (cart: IRobot) => void;
+  filterRobotsByMaterial: (material: string) => void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -48,6 +49,7 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
       .get("/api/robots")
       .then((response) => {
         setRobots([...response.data.data]);
+        setFilteredRobots([...response.data.data]);
         //setIsLoading(false);
       })
       .catch((error) => {
@@ -79,11 +81,20 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
     });
   }, []);
 
+
+  const filterRobotsByMaterial = useCallback((material: string) => {
+    const filteredRobots = robots.filter((robot: IRobot) => {
+      return robot.material.toLowerCase().includes(material.toLocaleLowerCase())
+    })
+    setFilteredRobots([...filteredRobots]);
+  }, [robots]);
+
   const value = useMemo(
     () => ({
       robots,
       filteredRobots:
-      filteredRobots.length > 0 ? filteredRobots : robots,
+      filteredRobots,
+      filterRobotsByMaterial,
       setRobots,
       setFilteredRobots,
       cart,
@@ -93,7 +104,7 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
       openDropdown,
       closeDropdown,
     }),
-    [robots, filteredRobots, cart, addToCart, clearCart, openCartDropdown]
+    [robots, filteredRobots, filterRobotsByMaterial, cart, addToCart, clearCart, openCartDropdown]
   );
 
   return (
