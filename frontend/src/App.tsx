@@ -1,16 +1,9 @@
-import {useState, useEffect} from "react"
-import axios from "axios"
+import { useState, useEffect } from "react";
+import axios from "axios";
 
-type Robot = {
-  name: number
-  image: string
-  price: string,
-  stock: string,
-  createdAt: string,
-  material: string
-  }
+import RobotList, { Robot } from "./components/robot-list/RobotList";
 
-function App(){
+function App() {
   const [robots, setRobots] = useState<Robot[]>([]);
   //const [isLoading, setIsLoading] = useState<>(false);
   useEffect(() => {
@@ -42,7 +35,7 @@ function App(){
   return (
     <div className="App">
       <h1>Robot Market</h1>
-
+      <RobotList robotList={robots} />
     </div>
   );
 }
