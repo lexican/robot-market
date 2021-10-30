@@ -1,9 +1,26 @@
-button{
+.cart-btn {
+  button.btn {
     font-weight: bold;
-    font-size: 14px;
+    font-size: 16px;
     color: #000000;
-    img{
-        width: 30px;
-        height: 25px;
+    display: flex;
+    img {
+      width: 30px;
+      height: 25px;
     }
+    .badge-container {
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      text-align: center;
+      border-radius: 50%;
+      background: #1e88e5;
+      margin-left: 4px;
+    }
+    span.badge {
+      color: #ffffff;
+      font-size: 18px;
+      padding: 0;
+    }
+  }
 }
