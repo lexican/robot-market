@@ -4,9 +4,10 @@
   "description": "This is an e-commerce site for you to buy robots. The homepage should display a list of robots for people to browse, where on the right side of the screen should display a cart that contains selected robots with total price.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "cd server && node index.js & cd frontend && npm run start",
-    "dev": "concurrently \"cd server && node index.js\" \"cd frontend && npm run start\""
+    "dev": "concurrently \"cd server && node index.js\" \"cd frontend && npm run start\"",
+    "install": "cd server && npm install & cd frontend && npm install",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "husky": {
     "hooks": {
