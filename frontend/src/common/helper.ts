@@ -1,5 +1,5 @@
-export const formatDate = (pDate) => {
-  var date = new Date(pDate);
+export const formatDate = (pDate: string | number | Date): string => {
+  const date = new Date(pDate);
   return (
     (date.getMonth() > 8 ? date.getMonth() + 1 : "0" + (date.getMonth() + 1)) +
     "-" +
@@ -9,8 +9,8 @@ export const formatDate = (pDate) => {
   );
 };
 
-export const formatPrice = (price) => {
-  var formattedPrice = new Intl.NumberFormat("th-TH", {
+export const formatPrice = (price: number | bigint): string => {
+  const formattedPrice = new Intl.NumberFormat("th-TH", {
     style: "currency",
     currency: "THB",
   }).format(price);

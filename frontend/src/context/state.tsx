@@ -7,7 +7,6 @@ import {
   useState,
   useEffect,
 } from "react";
-import { isBrowser } from "../common/is-browser";
 import { IRobot } from "../components/robot-list/RobotList";
 import axios from "axios";
 
@@ -27,7 +26,7 @@ const AppStateContext = createContext<IStateContext>(undefined as never);
 // eslint-disable-next-line @typescript-eslint/ban-types
 export const AppStateProvider: FC<{}> = ({ children }) => {
   const localCart: IRobot[] | [] = JSON.parse(
-    (isBrowser && localStorage.getItem("ecom_robot:cart")) || "[]"
+    localStorage.getItem("ecom_robot:cart") || "[]"
   );
   const [robots, setRobots] = useState<IRobot[]>([]);
   const [filteredRobots, setFilteredRobots] = useState<IRobot[]>([]);
@@ -232,7 +231,7 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
 
   const clearCart = useCallback(() => {
     setCart(() => {
-      isBrowser && localStorage.removeItem("ecom_poc:cart");
+      localStorage.removeItem("ecom_poc:cart");
       return [];
     });
   }, []);
@@ -287,6 +286,6 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
   );
 };
 
-export function useAppStateContext() {
+export function useAppStateContext(): IStateContext {
   return useContext(AppStateContext);
 }

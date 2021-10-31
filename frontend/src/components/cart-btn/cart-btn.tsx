@@ -1,6 +1,7 @@
+import { FC } from "react";
 import { useAppStateContext } from "../../context/state";
 import "./cart-btn.scss";
-const CartBtn = () => {
+const CartBtn: FC<unknown> = () => {
   const { cart } = useAppStateContext();
   return (
     <div className="cart-btn">
