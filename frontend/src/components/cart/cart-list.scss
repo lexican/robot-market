@@ -6,6 +6,14 @@
   right: 100px;
   top: 130px;
   z-index: 1000;
+
+  &.show {
+    display: block;
+  }
+
+  &.hide {
+    display: none;
+  }
   .cart-list-container {
     position: relative;
     height: 80vh;

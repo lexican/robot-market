@@ -15,10 +15,12 @@ export interface IStateContext {
   filteredRobots: IRobot[];
   cart: IRobot[];
   totalAmount: number;
+  openCartDropdown: boolean;
   addToCart: (cart: IRobot) => void;
   filterRobotsByMaterial: (material: string) => void;
   incrementQuantity: (robot: IRobot) => void;
   decrementQuantity: (robot: IRobot) => void;
+  handleDropdown: () => void;
 }
 
 const AppStateContext = createContext<IStateContext>(undefined as never);
@@ -32,9 +34,11 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
   const [filteredRobots, setFilteredRobots] = useState<IRobot[]>([]);
   const [cart, setCart] = useState<IRobot[]>(localCart);
   const [openCartDropdown, setOpenCartDropdown] = useState<boolean>(false);
-  const openDropdown = () => setOpenCartDropdown(true);
-  const closeDropdown = () => setOpenCartDropdown(false);
   const [totalAmount, setTotalAmount] = useState<number>(0);
+
+  const handleDropdown = useCallback(() => {
+    setOpenCartDropdown(!openCartDropdown);
+  }, [openCartDropdown]);
 
   //const [isLoading, setIsLoading] = useState<>(false);
 
@@ -262,8 +266,7 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
       addToCart,
       clearCart,
       openCartDropdown,
-      openDropdown,
-      closeDropdown,
+      handleDropdown,
     }),
     [
       robots,
@@ -276,6 +279,7 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
       addToCart,
       clearCart,
       openCartDropdown,
+      handleDropdown,
     ]
   );
 

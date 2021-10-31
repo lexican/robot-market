@@ -13,9 +13,9 @@ export type ICart = {
   quantity: number;
 };
 const CartList: FC<unknown> = () => {
-  const { cart, totalAmount } = useAppStateContext();
+  const { cart, totalAmount, openCartDropdown } = useAppStateContext();
   return (
-    <div className="cart-list">
+    <div className={`cart-list ${openCartDropdown ? "open" : "hide"}`}>
       <div className="cart-list-container">
         <div className="inner-container">
           {cart.map((item, index) => {
