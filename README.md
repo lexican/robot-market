@@ -4,9 +4,9 @@ Run Locally
 
 1. Clone repo
     $ Clone repo $ git clone https://github.com/lexican/robot-market.git <br>
-    $ cd robot-market
-    $ npm install
-    # npm run dev
+    $ cd robot-market <br>
+    $ npm install <br>
+    $ npm run dev
 
 2. Run Backend <br>
     $ cd server <br>
