@@ -67,6 +67,24 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
       });
   };
 
+  const incrementStock = useCallback(
+    (robot: IRobot) => {
+      const tempRobots = [...robots];
+      const selectedRobot = tempRobots.find(
+        (item: IRobot) => item.name === robot.name
+      );
+      if (selectedRobot) {
+        const index = tempRobots.indexOf(selectedRobot);
+        const robotItem = tempRobots[index];
+        robotItem.stock = robotItem.stock + 1;
+        setRobots(() => {
+          return [...tempRobots];
+        });
+      }
+    },
+    [robots]
+  );
+
   const decrementStock = useCallback(
     (robot: IRobot) => {
       const tempRobots = [...robots];
@@ -85,23 +103,7 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
     [robots]
   );
 
-  const incrementStock = useCallback(
-    (robot: IRobot) => {
-      const tempRobots = [...robots];
-      const selectedRobot = tempRobots.find(
-        (item: IRobot) => item.name === robot.name
-      );
-      if (selectedRobot) {
-        const index = tempRobots.indexOf(selectedRobot);
-        const robotItem = tempRobots[index];
-        robotItem.stock = robotItem.stock + 1;
-        setRobots(() => {
-          return [...tempRobots];
-        });
-      }
-    },
-    [robots]
-  );
+
 
   const incrementQuantity = useCallback(
     (robot: IRobot) => {
@@ -138,19 +140,19 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
         }
       }
     },
-    [cart, decrementStock, robots]
+    [cart, robots]
   );
 
   const removeCartItem = useCallback((robot: IRobot) => {
     let tempCart = [...cart];
-    tempCart = tempCart.filter((item) => item.name !== robot.name);
+    tempCart = tempCart.filter((item: IRobot) => item.name !== robot.name);
     setCart(() => {
       const newCart = [...tempCart];
       isBrowser &&
         localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
       return newCart;
     });
-  }, []);
+  }, [cart]);
 
   const decrementQuantity = useCallback(
     (robot: IRobot) => {
@@ -165,7 +167,6 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
         const robotItem = tempCart[index];
 
         if (robotItem.quantity > 1) {
-          
           robotItem.quantity = robotItem.quantity - 1;
           setCart(() => {
             const newCart = [...tempCart];
