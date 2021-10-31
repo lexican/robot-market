@@ -13,7 +13,7 @@ const RobotItem: FC<Props> = ({ robot }) => {
   const isOutOftock = () => {
     return stock > 0 ? false : true;
   };
-  const { addToCart } = useAppStateContext();
+  const { addToCart, cart } = useAppStateContext();
 
   return (
     <div className="col-md-3 robot-item">
@@ -29,7 +29,11 @@ const RobotItem: FC<Props> = ({ robot }) => {
             className="btn btn-primary"
             disabled={isOutOftock()}
             onClick={() => {
-              addToCart(robot);
+              if (cart.length < 5) {
+                addToCart(robot);
+              } else {
+                alert("You can only add 5 different robots to your cart");
+              }
             }}
           >
             Add to cart
