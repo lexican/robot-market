@@ -37,6 +37,7 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
   const [openCartDropdown, setOpenCartDropdown] = useState<boolean>(false);
   const openDropdown = () => setOpenCartDropdown(true);
   const closeDropdown = () => setOpenCartDropdown(false);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
 
   //const [isLoading, setIsLoading] = useState<>(false);
 
@@ -67,6 +68,15 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
       });
   };
 
+  const addTotal = useCallback(() => {
+    const tempCart = [...cart];
+    let total = 0;
+    tempCart.map((item) => (total += item.totalPrice));
+    setTotalAmount(() => {
+      return total;
+    });
+  }, [cart]);
+
   const incrementStock = useCallback(
     (robot: IRobot) => {
       const tempRobots = [...robots];
@@ -80,9 +90,10 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
         setRobots(() => {
           return [...tempRobots];
         });
+        addTotal();
       }
     },
-    [robots]
+    [addTotal, robots]
   );
 
   const decrementStock = useCallback(
@@ -98,12 +109,11 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
         setRobots(() => {
           return [...tempRobots];
         });
+        addTotal();
       }
     },
-    [robots]
+    [addTotal, robots]
   );
-
-
 
   const incrementQuantity = useCallback(
     (robot: IRobot) => {
@@ -121,7 +131,7 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
           setRobots(() => {
             return [...tempRobots];
           });
-
+          addTotal();
           const tempCart = [...cart];
           const selectedRobot = tempCart.find(
             (item: IRobot) => item.name === robot.name
@@ -138,23 +148,28 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
                 localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
               return newCart;
             });
+            addTotal();
           }
         }
       }
     },
-    [cart, robots]
+    [addTotal, cart, robots]
   );
 
-  const removeCartItem = useCallback((robot: IRobot) => {
-    let tempCart = [...cart];
-    tempCart = tempCart.filter((item: IRobot) => item.name !== robot.name);
-    setCart(() => {
-      const newCart = [...tempCart];
-      isBrowser &&
-        localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
-      return newCart;
-    });
-  }, [cart]);
+  const removeCartItem = useCallback(
+    (robot: IRobot) => {
+      let tempCart = [...cart];
+      tempCart = tempCart.filter((item: IRobot) => item.name !== robot.name);
+      setCart(() => {
+        const newCart = [...tempCart];
+        isBrowser &&
+          localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
+        return newCart;
+      });
+      addTotal();
+    },
+    [addTotal, cart]
+  );
 
   const decrementQuantity = useCallback(
     (robot: IRobot) => {
@@ -177,12 +192,13 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
               localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
             return newCart;
           });
+          addTotal();
         } else {
           removeCartItem(robot);
         }
       }
     },
-    [cart, incrementStock, removeCartItem]
+    [addTotal, cart, incrementStock, removeCartItem]
   );
 
   const addToCart = useCallback(
@@ -215,6 +231,7 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
               localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
             return newCart;
           });
+          addTotal();
         } else {
           decrementStock(robot);
           robot.quantity = 1;
@@ -225,10 +242,11 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
               localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
             return newCart;
           });
+          addTotal();
         }
       }
     },
-    [cart, decrementStock]
+    [addTotal, cart, decrementStock]
   );
 
   const clearCart = useCallback(() => {
@@ -254,6 +272,7 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
     () => ({
       robots,
       filteredRobots: filteredRobots,
+      totalAmount,
       incrementQuantity,
       decrementQuantity,
       filterRobotsByMaterial,
@@ -269,6 +288,7 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
     [
       robots,
       filteredRobots,
+      totalAmount,
       incrementQuantity,
       decrementQuantity,
       filterRobotsByMaterial,
