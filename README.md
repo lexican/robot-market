@@ -7,6 +7,8 @@ Run Locally
     $ cd robot-market <br>
     $ npm install <br>
     $ npm run dev
+    
+    visit 👉  http://localhost:3000
 
 2. Run Backend <br>
     $ cd server <br>
