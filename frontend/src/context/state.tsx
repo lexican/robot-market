@@ -1,8 +1,6 @@
 import {
   createContext,
-  Dispatch,
   FC,
-  SetStateAction,
   useCallback,
   useContext,
   useMemo,
@@ -17,14 +15,14 @@ export interface IStateContext {
   robots: IRobot[];
   filteredRobots: IRobot[];
   cart: IRobot[];
+  totalAmount: number;
   addToCart: (cart: IRobot) => void;
   filterRobotsByMaterial: (material: string) => void;
   incrementQuantity: (robot: IRobot) => void;
   decrementQuantity: (robot: IRobot) => void;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const AppStateContext = createContext<IStateContext>(undefined as any);
+const AppStateContext = createContext<IStateContext>(undefined as never);
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export const AppStateProvider: FC<{}> = ({ children }) => {
@@ -68,14 +66,13 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
       });
   };
 
-  const addTotal = useCallback(() => {
-    const tempCart = [...cart];
+  const addTotal = useCallback((cart: IRobot[]) => {
     let total = 0;
-    tempCart.map((item) => (total += item.totalPrice));
+    cart.map((item) => (total += Number(item.totalPrice)));
     setTotalAmount(() => {
       return total;
     });
-  }, [cart]);
+  }, []);
 
   const incrementStock = useCallback(
     (robot: IRobot) => {
@@ -90,10 +87,10 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
         setRobots(() => {
           return [...tempRobots];
         });
-        addTotal();
+        addTotal(cart);
       }
     },
-    [addTotal, robots]
+    [addTotal, cart, robots]
   );
 
   const decrementStock = useCallback(
@@ -109,10 +106,10 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
         setRobots(() => {
           return [...tempRobots];
         });
-        addTotal();
+        addTotal(cart);
       }
     },
-    [addTotal, robots]
+    [addTotal, cart, robots]
   );
 
   const incrementQuantity = useCallback(
@@ -127,28 +124,26 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
 
         if (robotItem.stock > 0) {
           robotItem.stock = robotItem.stock - 1;
-          robotItem.totalPrice = robot.price * robot.quantity;
+          robotItem.totalPrice = robotItem.price * robotItem.quantity;
           setRobots(() => {
             return [...tempRobots];
           });
-          addTotal();
+
           const tempCart = [...cart];
           const selectedRobot = tempCart.find(
             (item: IRobot) => item.name === robot.name
           );
-
           if (selectedRobot) {
             const index = tempCart.indexOf(selectedRobot);
             const robotItem = tempCart[index];
             robotItem.quantity = robotItem.quantity + 1;
-            robotItem.totalPrice = robot.price * robot.quantity;
+            robotItem.totalPrice = robotItem.price * robotItem.quantity;
             setCart(() => {
               const newCart = [...tempCart];
-              isBrowser &&
-                localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
+              addTotal(newCart);
+              localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
               return newCart;
             });
-            addTotal();
           }
         }
       }
@@ -162,11 +157,10 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
       tempCart = tempCart.filter((item: IRobot) => item.name !== robot.name);
       setCart(() => {
         const newCart = [...tempCart];
-        isBrowser &&
-          localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
+        addTotal(newCart);
+        localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
         return newCart;
       });
-      addTotal();
     },
     [addTotal, cart]
   );
@@ -179,21 +173,21 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
       );
 
       if (selectedRobot) {
-        incrementStock(robot);
         const index = tempCart.indexOf(selectedRobot);
         const robotItem = tempCart[index];
 
         if (robotItem.quantity > 1) {
+          incrementStock(robot);
           robotItem.quantity = robotItem.quantity - 1;
           robotItem.totalPrice = robot.price * robot.quantity;
           setCart(() => {
             const newCart = [...tempCart];
-            isBrowser &&
-              localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
+            addTotal(newCart);
+            localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
             return newCart;
           });
-          addTotal();
         } else {
+          incrementStock(robot);
           removeCartItem(robot);
         }
       }
@@ -203,54 +197,41 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
 
   const addToCart = useCallback(
     (robot: IRobot) => {
-      if (cart.length == 0) {
-        robot.quantity = 1;
-        robot.totalPrice = robot.price;
+      const tempCart = [...cart];
+      const selectedRobot = tempCart.find(
+        (item: IRobot) => item.name === robot.name
+      );
+
+      if (selectedRobot) {
         decrementStock(robot);
+        const index = tempCart.indexOf(selectedRobot);
+        const robotItem = tempCart[index];
+        robotItem.quantity = robotItem.quantity + 1;
+        robotItem.totalPrice = robot.price * robotItem.quantity;
+        tempCart[index] = robotItem;
         setCart(() => {
-          const newCart = [robot];
-          isBrowser &&
-            localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
+          const newCart = [...tempCart];
+          localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
+          addTotal(newCart);
           return newCart;
         });
       } else {
-        const tempCart = [...cart];
-        const selectedRobot = tempCart.find(
-          (item: IRobot) => item.name === robot.name
-        );
-
-        if (selectedRobot) {
-          decrementStock(robot);
-          const index = tempCart.indexOf(selectedRobot);
-          const robotItem = tempCart[index];
-          robotItem.quantity = robotItem.quantity + 1;
-          robotItem.totalPrice = robot.price * robot.quantity;
-          setCart(() => {
-            const newCart = [...tempCart];
-            isBrowser &&
-              localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
-            return newCart;
-          });
-          addTotal();
-        } else {
-          decrementStock(robot);
-          robot.quantity = 1;
-          robot.totalPrice = robot.price;
-          setCart((prev) => {
-            const newCart = [robot, ...prev];
-            isBrowser &&
-              localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
-            return newCart;
-          });
-          addTotal();
-        }
+        decrementStock(robot);
+        robot.quantity = 1;
+        robot.totalPrice = robot.price;
+        setCart((prev) => {
+          const newCart = [robot, ...prev];
+          addTotal(newCart);
+          localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
+          return newCart;
+        });
       }
     },
     [addTotal, cart, decrementStock]
   );
 
   const clearCart = useCallback(() => {
-    setCart((_) => {
+    setCart(() => {
       isBrowser && localStorage.removeItem("ecom_poc:cart");
       return [];
     });
