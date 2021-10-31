@@ -16,6 +16,7 @@ export interface IStateContext {
   cart: IRobot[];
   totalAmount: number;
   openCartDropdown: boolean;
+  isLoading: boolean;
   addToCart: (cart: IRobot) => void;
   filterRobotsByMaterial: (material: string) => void;
   incrementQuantity: (robot: IRobot) => void;
@@ -35,12 +36,11 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
   const [cart, setCart] = useState<IRobot[]>(localCart);
   const [openCartDropdown, setOpenCartDropdown] = useState<boolean>(false);
   const [totalAmount, setTotalAmount] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleDropdown = useCallback(() => {
     setOpenCartDropdown(!openCartDropdown);
   }, [openCartDropdown]);
-
-  //const [isLoading, setIsLoading] = useState<>(false);
 
   useEffect(() => {
     loadRobots();
@@ -48,13 +48,13 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
 
   //Fetch all the robots from the backend
   const loadRobots = () => {
-    //setIsLoading(true);
+    setIsLoading(true);
     axios
       .get("/api/robots")
       .then((response) => {
         setRobots([...response.data.data]);
         setFilteredRobots([...response.data.data]);
-        //setIsLoading(false);
+        setIsLoading(false);
       })
       .catch((error) => {
         if (error.response) {
@@ -65,7 +65,7 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
           console.log("Error", error.message);
         }
         console.log(error.config);
-        //setIsLoading(false);
+        setIsLoading(false);
       });
   };
 
@@ -267,6 +267,7 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
       clearCart,
       openCartDropdown,
       handleDropdown,
+      isLoading,
     }),
     [
       robots,
@@ -280,6 +281,7 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
       clearCart,
       openCartDropdown,
       handleDropdown,
+      isLoading,
     ]
   );
 
