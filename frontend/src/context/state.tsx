@@ -12,7 +12,6 @@ import {
 import { isBrowser } from "../common/is-browser";
 import { IRobot } from "../components/robot-list/RobotList";
 import axios from "axios";
-import RobotItem from "../components/robot-list/robot-item/RobotItem";
 
 export interface IStateContext {
   robots: IRobot[];
@@ -20,6 +19,8 @@ export interface IStateContext {
   cart: IRobot[];
   addToCart: (cart: IRobot) => void;
   filterRobotsByMaterial: (material: string) => void;
+  incrementQuantity: (robot: IRobot) => void;
+  decrementQuantity: (robot: IRobot) => void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -124,7 +125,6 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
           );
 
           if (selectedRobot) {
-            decrementStock(robot);
             const index = tempCart.indexOf(selectedRobot);
             const robotItem = tempCart[index];
             robotItem.quantity = robotItem.quantity + 1;
@@ -139,6 +139,46 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
       }
     },
     [cart, decrementStock, robots]
+  );
+
+  const removeCartItem = useCallback((robot: IRobot) => {
+    let tempCart = [...cart];
+    tempCart = tempCart.filter((item) => item.name !== robot.name);
+    setCart(() => {
+      const newCart = [...tempCart];
+      isBrowser &&
+        localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
+      return newCart;
+    });
+  }, []);
+
+  const decrementQuantity = useCallback(
+    (robot: IRobot) => {
+      const tempCart = [...cart];
+      const selectedRobot = tempCart.find(
+        (item: IRobot) => item.name === robot.name
+      );
+
+      if (selectedRobot) {
+        incrementStock(robot);
+        const index = tempCart.indexOf(selectedRobot);
+        const robotItem = tempCart[index];
+
+        if (robotItem.quantity > 1) {
+          
+          robotItem.quantity = robotItem.quantity - 1;
+          setCart(() => {
+            const newCart = [...tempCart];
+            isBrowser &&
+              localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
+            return newCart;
+          });
+        } else {
+          removeCartItem(robot);
+        }
+      }
+    },
+    [cart, incrementStock, removeCartItem]
   );
 
   const addToCart = useCallback(
@@ -208,6 +248,8 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
     () => ({
       robots,
       filteredRobots: filteredRobots,
+      incrementQuantity,
+      decrementQuantity,
       filterRobotsByMaterial,
       setRobots,
       setFilteredRobots,
@@ -221,6 +263,8 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
     [
       robots,
       filteredRobots,
+      incrementQuantity,
+      decrementQuantity,
       filterRobotsByMaterial,
       cart,
       addToCart,

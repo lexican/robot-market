@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { formatPrice } from "../../../common/helper";
+import { useAppStateContext } from "../../../context/state";
 import { IRobot } from "../../robot-list/RobotList";
 import "./cart-item.scss";
 
@@ -9,6 +10,7 @@ interface Props {
 
 const CartItem: FC<Props> = ({ robot }) => {
   const { name, image, price, quantity } = robot;
+  const { incrementQuantity, decrementQuantity } = useAppStateContext();
   return (
     <div className="cart-item">
       <img src={image}></img>
@@ -16,9 +18,21 @@ const CartItem: FC<Props> = ({ robot }) => {
         <h3 className="name">{name}</h3>
         <div className="price">{formatPrice(price)}</div>
         <div className="d-flex mt-3">
-          <button>-</button>
+          <button
+            onClick={() => {
+              decrementQuantity(robot);
+            }}
+          >
+            -
+          </button>
           <span className="mx-2">{quantity}</span>
-          <button>+</button>
+          <button
+            onClick={() => {
+              incrementQuantity(robot);
+            }}
+          >
+            +
+          </button>
         </div>
       </div>
     </div>
