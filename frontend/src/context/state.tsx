@@ -26,8 +26,7 @@ export interface IStateContext {
 
 const AppStateContext = createContext<IStateContext>(undefined as never);
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export const AppStateProvider: FC<{}> = ({ children }) => {
+export const AppStateProvider: FC<unknown> = ({ children }) => {
   const localCart: IRobot[] | [] = JSON.parse(
     localStorage.getItem("ecom_robot:cart") || "[]"
   );
@@ -52,8 +51,9 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
     axios
       .get("/api/robots")
       .then((response) => {
-        setRobots([...response.data.data]);
-        setFilteredRobots([...response.data.data]);
+        const robots = [...response.data.data];
+        setRobots(robots);
+        setFilteredRobots(robots);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -88,12 +88,12 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
         const robotItem = tempRobots[index];
         robotItem.stock = robotItem.stock + 1;
         setRobots(() => {
+          addTotal(tempRobots);
           return [...tempRobots];
         });
-        addTotal(cart);
       }
     },
-    [addTotal, cart, robots]
+    [addTotal, robots]
   );
 
   const decrementStock = useCallback(
@@ -107,12 +107,12 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
         const robotItem = tempRobots[index];
         robotItem.stock = robotItem.stock - 1;
         setRobots(() => {
+          addTotal(tempRobots);
           return [...tempRobots];
         });
-        addTotal(cart);
       }
     },
-    [addTotal, cart, robots]
+    [addTotal, robots]
   );
 
   const incrementQuantity = useCallback(
@@ -144,7 +144,6 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
             setCart(() => {
               const newCart = [...tempCart];
               addTotal(newCart);
-              localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
               return newCart;
             });
           }
@@ -161,7 +160,6 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
       setCart(() => {
         const newCart = [...tempCart];
         addTotal(newCart);
-        localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
         return newCart;
       });
     },
@@ -186,7 +184,6 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
           setCart(() => {
             const newCart = [...tempCart];
             addTotal(newCart);
-            localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
             return newCart;
           });
         } else {
@@ -214,7 +211,6 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
         tempCart[index] = robotItem;
         setCart(() => {
           const newCart = [...tempCart];
-          localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
           addTotal(newCart);
           return newCart;
         });
@@ -225,20 +221,12 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
         setCart((prev) => {
           const newCart = [robot, ...prev];
           addTotal(newCart);
-          localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
           return newCart;
         });
       }
     },
     [addTotal, cart, decrementStock]
   );
-
-  const clearCart = useCallback(() => {
-    setCart(() => {
-      localStorage.removeItem("ecom_poc:cart");
-      return [];
-    });
-  }, []);
 
   const filterRobotsByMaterial = useCallback(
     (material: string) => {
@@ -264,7 +252,6 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
       setFilteredRobots,
       cart,
       addToCart,
-      clearCart,
       openCartDropdown,
       handleDropdown,
       isLoading,
@@ -278,7 +265,6 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
       filterRobotsByMaterial,
       cart,
       addToCart,
-      clearCart,
       openCartDropdown,
       handleDropdown,
       isLoading,
