@@ -35,7 +35,7 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
   const [openCartDropdown, setOpenCartDropdown] = useState<boolean>(false);
   const openDropdown = () => setOpenCartDropdown(true);
   const closeDropdown = () => setOpenCartDropdown(false);
- 
+
   //const [isLoading, setIsLoading] = useState<>(false);
 
   useEffect(() => {
@@ -65,14 +65,69 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
       });
   };
 
-  const addToCart = useCallback((robot: IRobot) => {
-    setCart((prev) => {
-      const newCart = [robot, ...prev];
-      isBrowser &&
-        localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
-      return newCart;
-    });
-  }, []);
+  
+  const decrementStock = useCallback((robot: IRobot) => {
+    const tempRobots = [...robots];
+    const selectedRobot = tempRobots.find(
+      (item: IRobot) => item.name === robot.name
+    );
+    if (selectedRobot) {
+      console.log("selectedRobot" + selectedRobot.stock)
+      const index = tempRobots.indexOf(selectedRobot);
+      const robotItem = tempRobots[index];
+      robotItem.stock = robotItem.stock - 1;
+      setRobots(() => {
+        return [...tempRobots];
+      });
+    }
+  }, [robots]);
+
+  const addToCart = useCallback(
+    (robot: IRobot) => {
+      if (cart.length == 0) {
+        robot.quantity = 1;
+        decrementStock(robot);
+        console.log("Add to cart");
+        setCart(() => {
+          const newCart = [robot];
+          isBrowser &&
+            localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
+          return newCart;
+        });
+      } else {
+        const tempCart = [...cart];
+        const selectedRobot = tempCart.find(
+          (item: IRobot) => item.name === robot.name
+        );
+
+        if (selectedRobot) {
+          decrementStock(robot);
+          const index = tempCart.indexOf(selectedRobot);
+          const robotItem = tempCart[index];
+          robotItem.quantity = robotItem.quantity + 1;
+          setCart(() => {
+            const newCart = [...tempCart];
+            isBrowser &&
+              localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
+            return newCart;
+          });
+        } else {
+          decrementStock(robot);
+          robot.quantity = 1;
+          setCart((prev) => {
+            const newCart = [robot, ...prev];
+            isBrowser &&
+              localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
+            return newCart;
+          });
+        }
+      }
+    },
+    [cart, decrementStock]
+  );
+
+
+
 
   const clearCart = useCallback(() => {
     setCart((_) => {
@@ -81,19 +136,22 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
     });
   }, []);
 
-
-  const filterRobotsByMaterial = useCallback((material: string) => {
-    const filteredRobots = robots.filter((robot: IRobot) => {
-      return robot.material.toLowerCase().includes(material.toLocaleLowerCase())
-    })
-    setFilteredRobots([...filteredRobots]);
-  }, [robots]);
+  const filterRobotsByMaterial = useCallback(
+    (material: string) => {
+      const filteredRobots = robots.filter((robot: IRobot) => {
+        return robot.material
+          .toLowerCase()
+          .includes(material.toLocaleLowerCase());
+      });
+      setFilteredRobots([...filteredRobots]);
+    },
+    [robots]
+  );
 
   const value = useMemo(
     () => ({
       robots,
-      filteredRobots:
-      filteredRobots,
+      filteredRobots: filteredRobots,
       filterRobotsByMaterial,
       setRobots,
       setFilteredRobots,
@@ -104,7 +162,15 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
       openDropdown,
       closeDropdown,
     }),
-    [robots, filteredRobots, filterRobotsByMaterial, cart, addToCart, clearCart, openCartDropdown]
+    [
+      robots,
+      filteredRobots,
+      filterRobotsByMaterial,
+      cart,
+      addToCart,
+      clearCart,
+      openCartDropdown,
+    ]
   );
 
   return (

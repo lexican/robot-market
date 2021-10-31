@@ -9,6 +9,7 @@ export type IRobot = {
   stock: number;
   createdAt: string;
   material: string;
+  quantity: number;
 };
 
 const RobotList: FC<unknown> = () => {
