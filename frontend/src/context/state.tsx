@@ -12,6 +12,7 @@ import {
 import { isBrowser } from "../common/is-browser";
 import { IRobot } from "../components/robot-list/RobotList";
 import axios from "axios";
+import RobotItem from "../components/robot-list/robot-item/RobotItem";
 
 export interface IStateContext {
   robots: IRobot[];
@@ -65,36 +66,80 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
       });
   };
 
-  
-  const decrementStock = useCallback((robot: IRobot) => {
-    const tempRobots = [...robots];
-    const selectedRobot = tempRobots.find(
-      (item: IRobot) => item.name === robot.name
-    );
-    if (selectedRobot) {
-      const index = tempRobots.indexOf(selectedRobot);
-      const robotItem = tempRobots[index];
-      robotItem.stock = robotItem.stock - 1;
-      setRobots(() => {
-        return [...tempRobots];
-      });
-    }
-  }, [robots]);
+  const decrementStock = useCallback(
+    (robot: IRobot) => {
+      const tempRobots = [...robots];
+      const selectedRobot = tempRobots.find(
+        (item: IRobot) => item.name === robot.name
+      );
+      if (selectedRobot) {
+        const index = tempRobots.indexOf(selectedRobot);
+        const robotItem = tempRobots[index];
+        robotItem.stock = robotItem.stock - 1;
+        setRobots(() => {
+          return [...tempRobots];
+        });
+      }
+    },
+    [robots]
+  );
 
-  const incrementStock = useCallback((robot: IRobot) => {
-    const tempRobots = [...robots];
-    const selectedRobot = tempRobots.find(
-      (item: IRobot) => item.name === robot.name
-    );
-    if (selectedRobot) {
-      const index = tempRobots.indexOf(selectedRobot);
-      const robotItem = tempRobots[index];
-      robotItem.stock = robotItem.stock + 1;
-      setRobots(() => {
-        return [...tempRobots];
-      });
-    }
-  }, [robots]);
+  const incrementStock = useCallback(
+    (robot: IRobot) => {
+      const tempRobots = [...robots];
+      const selectedRobot = tempRobots.find(
+        (item: IRobot) => item.name === robot.name
+      );
+      if (selectedRobot) {
+        const index = tempRobots.indexOf(selectedRobot);
+        const robotItem = tempRobots[index];
+        robotItem.stock = robotItem.stock + 1;
+        setRobots(() => {
+          return [...tempRobots];
+        });
+      }
+    },
+    [robots]
+  );
+
+  const incrementQuantity = useCallback(
+    (robot: IRobot) => {
+      const tempRobots = [...robots];
+      const selectedRobot = tempRobots.find(
+        (item: IRobot) => item.name === robot.name
+      );
+      if (selectedRobot) {
+        const index = tempRobots.indexOf(selectedRobot);
+        const robotItem = tempRobots[index];
+
+        if (robotItem.stock > 0) {
+          robotItem.stock = robotItem.stock - 1;
+          setRobots(() => {
+            return [...tempRobots];
+          });
+
+          const tempCart = [...cart];
+          const selectedRobot = tempCart.find(
+            (item: IRobot) => item.name === robot.name
+          );
+
+          if (selectedRobot) {
+            decrementStock(robot);
+            const index = tempCart.indexOf(selectedRobot);
+            const robotItem = tempCart[index];
+            robotItem.quantity = robotItem.quantity + 1;
+            setCart(() => {
+              const newCart = [...tempCart];
+              isBrowser &&
+                localStorage.setItem("ecom_poc:cart", JSON.stringify(newCart));
+              return newCart;
+            });
+          }
+        }
+      }
+    },
+    [cart, decrementStock, robots]
+  );
 
   const addToCart = useCallback(
     (robot: IRobot) => {
@@ -139,9 +184,6 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
     },
     [cart, decrementStock]
   );
-
-
-
 
   const clearCart = useCallback(() => {
     setCart((_) => {
