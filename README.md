@@ -2,21 +2,21 @@
 
 Run Locally
 
-Clone repo $ git clone https://github.com/lexican/robot-market.git
-$ cd robot-market
-$ npm install
-$ npm run dev
+1. Clone repo
+    $ Clone repo $ git clone https://github.com/lexican/robot-market.git <br>
+    $ cd robot-market
+    $ npm install
+    # npm run dev
 
-Run Server
-$ cd server
-$ npm install
-$ npm start
+2. Run Backend <br>
+    $ cd server <br>
+    $ npm install <br>
+    $ npm start
 
-Run Frontend
+3. Run Frontend <br>
 
-open new terminal
-
-$ cd frontend
-$ npm install
-$ npm start
-
+    open new terminal <br>
+    
+    $ cd frontend <br>
+    $ npm install<br>
+    $ npm start
