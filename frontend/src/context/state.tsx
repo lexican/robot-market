@@ -72,10 +72,24 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
       (item: IRobot) => item.name === robot.name
     );
     if (selectedRobot) {
-      console.log("selectedRobot" + selectedRobot.stock)
       const index = tempRobots.indexOf(selectedRobot);
       const robotItem = tempRobots[index];
       robotItem.stock = robotItem.stock - 1;
+      setRobots(() => {
+        return [...tempRobots];
+      });
+    }
+  }, [robots]);
+
+  const incrementStock = useCallback((robot: IRobot) => {
+    const tempRobots = [...robots];
+    const selectedRobot = tempRobots.find(
+      (item: IRobot) => item.name === robot.name
+    );
+    if (selectedRobot) {
+      const index = tempRobots.indexOf(selectedRobot);
+      const robotItem = tempRobots[index];
+      robotItem.stock = robotItem.stock + 1;
       setRobots(() => {
         return [...tempRobots];
       });
