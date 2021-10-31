@@ -117,6 +117,7 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
 
         if (robotItem.stock > 0) {
           robotItem.stock = robotItem.stock - 1;
+          robotItem.totalPrice = robot.price * robot.quantity;
           setRobots(() => {
             return [...tempRobots];
           });
@@ -130,6 +131,7 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
             const index = tempCart.indexOf(selectedRobot);
             const robotItem = tempCart[index];
             robotItem.quantity = robotItem.quantity + 1;
+            robotItem.totalPrice = robot.price * robot.quantity;
             setCart(() => {
               const newCart = [...tempCart];
               isBrowser &&
@@ -168,6 +170,7 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
 
         if (robotItem.quantity > 1) {
           robotItem.quantity = robotItem.quantity - 1;
+          robotItem.totalPrice = robot.price * robot.quantity;
           setCart(() => {
             const newCart = [...tempCart];
             isBrowser &&
@@ -186,8 +189,8 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
     (robot: IRobot) => {
       if (cart.length == 0) {
         robot.quantity = 1;
+        robot.totalPrice = robot.price;
         decrementStock(robot);
-        console.log("Add to cart");
         setCart(() => {
           const newCart = [robot];
           isBrowser &&
@@ -205,6 +208,7 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
           const index = tempCart.indexOf(selectedRobot);
           const robotItem = tempCart[index];
           robotItem.quantity = robotItem.quantity + 1;
+          robotItem.totalPrice = robot.price * robot.quantity;
           setCart(() => {
             const newCart = [...tempCart];
             isBrowser &&
@@ -214,6 +218,7 @@ export const AppStateProvider: FC<{}> = ({ children }) => {
         } else {
           decrementStock(robot);
           robot.quantity = 1;
+          robot.totalPrice = robot.price;
           setCart((prev) => {
             const newCart = [robot, ...prev];
             isBrowser &&

@@ -12,9 +12,13 @@
   }
 
   .name,
-  .price {
+  .total-price {
     font-size: 14px;
     line-height: 1.4;
+    font-weight: bold;
+  }
+  .price {
+    font-size: 12px;
   }
   button{
       width: 30px;

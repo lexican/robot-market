@@ -10,6 +10,7 @@ export type IRobot = {
   createdAt: string;
   material: string;
   quantity: number;
+  totalPrice: number;
 };
 
 const RobotList: FC<unknown> = () => {

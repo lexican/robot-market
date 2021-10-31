@@ -9,7 +9,7 @@ interface Props {
 }
 
 const CartItem: FC<Props> = ({ robot }) => {
-  const { name, image, price, quantity } = robot;
+  const { name, image, price, quantity, totalPrice } = robot;
   const { incrementQuantity, decrementQuantity } = useAppStateContext();
   return (
     <div className="cart-item">
@@ -25,7 +25,7 @@ const CartItem: FC<Props> = ({ robot }) => {
           >
             -
           </button>
-          <span className="mx-2">{quantity}</span>
+          <span className="m-2">{quantity}</span>
           <button
             onClick={() => {
               incrementQuantity(robot);
@@ -34,6 +34,7 @@ const CartItem: FC<Props> = ({ robot }) => {
             +
           </button>
         </div>
+        <div className="total-price">{formatPrice(totalPrice)}</div>
       </div>
     </div>
   );
