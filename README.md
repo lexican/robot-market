@@ -2,7 +2,7 @@
 
 Run Locally
 
-1. Clone repo
+1. Clone repo <br>
     $ git clone https://github.com/lexican/robot-market.git <br>
     $ cd robot-market <br>
     $ npm install <br>
