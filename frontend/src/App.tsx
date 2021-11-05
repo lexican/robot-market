@@ -1,7 +1,7 @@
 import RobotList from "./components/robot-list/RobotList";
 import "./app.scss";
-import FilterMaterial from "./components/filter-material/filter-material";
-import CartBtn from "./components/cart-btn/cart-btn";
+import FilterMaterial from "./components/filter-material/FilterMaterial";
+import CartBtn from "./components/cart-btn/CartBtn";
 import CartList from "./components/cart/CartList";
 import { FC } from "react";
 import { useAppStateContext } from "./context/state";
