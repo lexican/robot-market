@@ -27,12 +27,9 @@ export interface IStateContext {
 const AppStateContext = createContext<IStateContext>(undefined as never);
 
 export const AppStateProvider: FC<unknown> = ({ children }) => {
-  const localCart: IRobot[] | [] = JSON.parse(
-    localStorage.getItem("ecom_robot:cart") || "[]"
-  );
   const [robots, setRobots] = useState<IRobot[]>([]);
   const [filteredRobots, setFilteredRobots] = useState<IRobot[]>([]);
-  const [cart, setCart] = useState<IRobot[]>(localCart);
+  const [cart, setCart] = useState<IRobot[]>([]);
   const [openCartDropdown, setOpenCartDropdown] = useState<boolean>(false);
   const [totalAmount, setTotalAmount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
