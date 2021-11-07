@@ -68,7 +68,11 @@ export const AppStateProvider: FC<unknown> = ({ children }) => {
 
   const addTotal = useCallback((cart: IRobot[]) => {
     let total = 0;
-    cart.map((item) => (total += Number(item.totalPrice)));
+
+    total = cart.reduce((currentTotal, item) => {
+      return Number(item.totalPrice) + currentTotal;
+    }, 0);
+
     setTotalAmount(() => {
       return total;
     });

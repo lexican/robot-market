@@ -18,8 +18,8 @@ const CartList: FC<unknown> = () => {
     <div className={`cart-list ${openCartDropdown ? "open" : "hide"}`}>
       <div className="cart-list-container">
         <div className="inner-container">
-          {cart.map((item, index) => {
-            return <CartItem robot={item} key={index} />;
+          {cart.map((item) => {
+            return <CartItem robot={item} key={item.name} />;
           })}
         </div>
         <div className="total-amount">

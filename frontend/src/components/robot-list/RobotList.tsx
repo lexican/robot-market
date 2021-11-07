@@ -18,8 +18,8 @@ const RobotList: FC<unknown> = () => {
   return (
     <section className="robots-list">
       <div className="row">
-        {filteredRobots.map((item, index) => {
-          return <RobotItem robot={item} key={index} />;
+        {filteredRobots.map((item) => {
+          return <RobotItem robot={item} key={item.name} />;
         })}
       </div>
     </section>
